@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "start",
+      "speaker": "Jonas",
+      "text": "Labas!",
+      "next": "node2",
+      "portrait": "jonas_default",
+      "background": "classroom"
+    },
+    {
+      "id": "node2",
+      "speaker": "Ona",
+      "text": "Sveikas!",
+      "next": null,
+      "portrait": "ona_smile",
+      "background": "classroom"
+    }
+  ]
+}
