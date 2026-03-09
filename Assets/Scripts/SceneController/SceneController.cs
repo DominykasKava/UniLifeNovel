@@ -2,25 +2,28 @@ using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
-    // ŠITAS bus prijungtas kai kitas žmogus sukurs dialogo sistemą
-    public MonoBehaviour dialogueSystem;
+    public DialogueManager dialogueSystem;
 
     // Ar dialogas šiuo metu aktyvus
     private bool dialogueActive = false;
+
+    private void Start()
+    {
+        StartDialogue();
+    }
 
     void Update()
     {
         // FAST FORWARD (pereiti prie kitos eilutės)
         if (dialogueActive && Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("FAST-FORWARD paspaustas (kol kas tik log).");
-            // ČIA vėliau prijungs call į dialogManager.NextLine()
+            dialogueSystem.Next();
         }
 
         // SKIP (išjungti dialogą)
         if (dialogueActive && Input.GetKeyDown(KeyCode.S))
         {
-            Debug.Log("SKIP paspaustas (kol kas tik log).");
+            Debug.Log("SKIP paspaustas.");
             StopDialogue();
         }
     }
@@ -30,14 +33,15 @@ public class SceneController : MonoBehaviour
     /// </summary>
     public void StartDialogue()
     {
-        if (dialogueSystem == null)
+        if (dialogueSystem != null)
         {
-            Debug.LogError("NEPASKIRTAS dialogueSystem! (čia error handling).");
-            return;
+            dialogueSystem.StartDialogue("start");
+            dialogueActive = true;
         }
-
-        dialogueActive = true;
-        Debug.Log("Dialogas pradėtas.");
+        else
+        {
+            Debug.LogError("DialogueSystem nepriskirtas.");
+        }
     }
 
     /// <summary>

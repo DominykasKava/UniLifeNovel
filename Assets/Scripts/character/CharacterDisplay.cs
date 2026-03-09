@@ -1,4 +1,4 @@
-/*using UnityEngine;
+using UnityEngine;
 using TMPro;
 
 public class CharacterDisplay : MonoBehaviour
@@ -19,4 +19,4 @@ public class CharacterDisplay : MonoBehaviour
     {
         nameText.text = speakerName;
     }
-}*/
+}
