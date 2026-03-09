@@ -4,6 +4,8 @@ using System;
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
+    public CharacterDisplay characterDisplay;
+    public PortraitController portraitController;
     public DialogueUI dialogueUI;
     private DialogueLoader loader;
     private DialogueNode currentNode;
@@ -53,13 +55,24 @@ public class DialogueManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (currentNode == null || dialogueUI == null) return;
+        if (currentNode == null) return;
 
-        Sprite portraitSprite = null;
-        if (!string.IsNullOrEmpty(currentNode.portrait))
+        if (dialogueUI != null)
         {
-            portraitSprite = Resources.Load<Sprite>("Portraits/" + currentNode.portrait);
+            dialogueUI.DisplayDialogue(currentNode.speaker, currentNode.text, null);
         }
-        dialogueUI.DisplayDialogue(currentNode.speaker, currentNode.text, portraitSprite);
+
+        if (characterDisplay != null)
+        {
+            characterDisplay.SetSpeakerName(currentNode.speaker);
+        }
+
+        if (portraitController != null && !string.IsNullOrEmpty(currentNode.portrait))
+        {
+            string[] parts = currentNode.portrait.Split('_');
+            string characterName = parts[0];
+            string expressions = parts.Length > 1 ? parts[1] : "default";
+            portraitController.SetPortrait(characterName, expressions);
+        }
     }
 }
