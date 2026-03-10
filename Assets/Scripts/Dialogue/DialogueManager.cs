@@ -10,6 +10,8 @@ public class DialogueManager : MonoBehaviour
     public DialogueUI dialogueUI;
     private DialogueLoader loader;
     private DialogueNode currentNode;
+    public event Action<string> OnLineDisplayed;
+    public event Action OnDialogueFinished;
 
     [Header("Dialogue file name (be .json)")]
     public string dialogueFile = "test_dialogue";
@@ -39,8 +41,10 @@ public class DialogueManager : MonoBehaviour
         {
             return;
         }
+
         if (string.IsNullOrEmpty(currentNode.next))
         {
+            OnDialogueFinished?.Invoke();
             Debug.Log("Dialogas pasibaigė");
             return;
         }
@@ -80,5 +84,7 @@ public class DialogueManager : MonoBehaviour
         {
             backgroundLoader.SetBackground(currentNode.background);
         }
+
+        OnLineDisplayed?.Invoke("");
     }
 }
