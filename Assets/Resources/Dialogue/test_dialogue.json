@@ -3,7 +3,7 @@
     {
       "id": "start",
       "speaker": "Jonas",
-      "text": "Labas!",
+      "text": "Labas! kaip sekasi? ka snd ka vakare",
       "next": "node2",
       "portrait": "jonas_default",
       "background": "classroom"
@@ -11,7 +11,7 @@
     {
       "id": "node2",
       "speaker": "Ona",
-      "text": "sw",
+      "text": "sw sw sw sw sws swww swwwww",
       "next": null,
       "portrait": "ona_smile",
       "background": "classroom"

@@ -6,6 +6,7 @@ public class DialogueManager : MonoBehaviour
     public static DialogueManager Instance { get; private set; }
     public CharacterDisplay characterDisplay;
     public PortraitController portraitController;
+    public BackgroundLoader backgroundLoader;
     public DialogueUI dialogueUI;
     private DialogueLoader loader;
     private DialogueNode currentNode;
@@ -73,6 +74,11 @@ public class DialogueManager : MonoBehaviour
             string characterName = parts[0];
             string expressions = parts.Length > 1 ? parts[1] : "default";
             portraitController.SetPortrait(characterName, expressions);
+        }
+
+        if (backgroundLoader != null && !string.IsNullOrEmpty(currentNode.background))
+        {
+            backgroundLoader.SetBackground(currentNode.background);
         }
     }
 }

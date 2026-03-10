@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 18329016e0391ff41bab443abb5cf1f0
+guid: a501d045353872f4b834683a2a04435f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7008940800850809880
-    second: jonas_default_0
+      213: -2564619566193218763
+    second: classroom_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jonas_default_0
+      name: classroom_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 447
-        height: 340
+        width: 1920
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 814547ef582c44160800000000000000
-      internalID: 7008940800850809880
+      spriteID: 53b690da714a86cd0800000000000000
+      internalID: -2564619566193218763
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      jonas_default_0: 7008940800850809880
+      classroom_0: -2564619566193218763
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
