@@ -11,4 +11,6 @@ public class DialogueNode
     public string next;
     public string portrait;
     public string background;
+
+    public Choices[] choices;
 }
