@@ -12,6 +12,41 @@
       "id": "node2",
       "speaker": "Ona",
       "text": "sw sw sw sw sws swww swwwww",
+      "next": "node3",
+      "portrait": "ona_smile",
+      "background": "classroom"
+    },
+    {
+      "id": "node3",
+      "speaker": "",
+      "text": "",
+      "portrait": "",
+      "background": "classroom",
+      "choices": [
+        {
+          "text": "Padėti Onai",
+          "next": "help",
+          "callback": "GainTrust"
+        },
+        {
+          "text": "Ignoruoti",
+          "next": "ignore",
+          "callback": "LoseTrust"
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "speaker": "Ona",
+      "text": "Ačiū už pagalbą!",
+      "next": null,
+      "portrait": "ona_smile",
+      "background": "classroom"
+    },
+    {
+      "id": "ignore",
+      "speaker": "Ona",
+      "text": "Hm… gal kitą kartą.",
       "next": null,
       "portrait": "ona_smile",
       "background": "classroom"
