@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class ChoiceUIManager : MonoBehaviour
 {
     public GameObject choiceButtonPrefab;
     public Transform choicesParent;
@@ -14,6 +14,8 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
         foreach (Choices choice in choices)
         {
+            Choices currentChoice = choice;
+
             GameObject buttonObj = Instantiate(choiceButtonPrefab, choicesParent);
 
             TMP_Text text = buttonObj.GetComponentInChildren<TMP_Text>();
@@ -22,12 +24,12 @@ public class NewMonoBehaviourScript : MonoBehaviour
             Button btn = buttonObj.GetComponent<Button>();
             btn.onClick.AddListener(() =>
             {
-                Debug.Log("Selected: " + choice.text);
+                DialogueManager.Instance.Choose(currentChoice);
             });
         }
     }
 
-    void ClearChoices()
+    public void ClearChoices()
     {
         foreach (Transform child in choicesParent)
         {

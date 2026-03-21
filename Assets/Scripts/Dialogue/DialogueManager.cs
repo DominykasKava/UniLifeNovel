@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class DialogueManager : MonoBehaviour
     public DialogueUI dialogueUI;
     private DialogueLoader loader;
     private DialogueNode currentNode;
+    public ChoiceUIManager choiceUI;
     public event Action<string> OnLineDisplayed;
     public event Action OnDialogueFinished;
 
@@ -43,7 +45,11 @@ public class DialogueManager : MonoBehaviour
     {
         if (currentNode == null) return;
 
-        // Jei dabartinis mazgas neturi "next" – dialogas baigtas
+        if (currentNode.choices != null && currentNode.choices.Length > 0)
+        {
+            return;
+        }
+
         if (string.IsNullOrEmpty(currentNode.next))
         {
             OnDialogueFinished?.Invoke();
@@ -51,10 +57,8 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // 1 žingsnis į "next"
         currentNode = loader.GetNode(currentNode.next);
 
-        // Auto-sekimas per visus Jump mazgus:
         int hops = 0;
         while (currentNode != null &&
                !string.IsNullOrEmpty(currentNode.jumpTo) &&
@@ -67,8 +71,7 @@ public class DialogueManager : MonoBehaviour
                 Debug.LogError($"DialogueManager: Jump tikslas nerastas: '{targetId}' (iš '{currentNode.id}')");
                 break;
             }
-            currentNode = target; // persokam
-            // tęsiam ciklą — jei dar vienas Jump, šoksime toliau
+            currentNode = target; 
         }
 
         if (hops >= MaxAutoJumps)
@@ -80,6 +83,22 @@ public class DialogueManager : MonoBehaviour
     }
 
     public DialogueNode GetCurrentNode() => currentNode;
+
+    public void Choose(Choices choices)
+    {
+        if (choices == null) return;
+
+        if (!string.IsNullOrEmpty(choices.next))
+        {
+            currentNode = loader.GetNode(choices.next);
+        }
+        else
+        {
+            return;
+        }
+
+        UpdateUI();
+    }
 
     private void UpdateUI()
     {
@@ -107,6 +126,18 @@ public class DialogueManager : MonoBehaviour
         if (backgroundLoader != null && !string.IsNullOrEmpty(currentNode.background))
         {
             backgroundLoader.SetBackground(currentNode.background);
+        }
+
+        if (choiceUI != null)
+        {
+            if (currentNode.choices != null && currentNode.choices.Length > 0)
+            {
+                choiceUI.ShowChoices(new List<Choices>(currentNode.choices));
+            }
+            else
+            {
+                choiceUI.ClearChoices();
+            }
         }
 
         OnLineDisplayed?.Invoke("");
