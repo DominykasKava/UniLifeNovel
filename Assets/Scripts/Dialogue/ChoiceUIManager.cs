@@ -46,6 +46,13 @@ public class ChoiceUIManager : MonoBehaviour
         }
         buttons.Clear();
         cnt = 0;
+
+        Button btnn = choiceButtonPrefab.GetComponent<Button>();
+
+        if (btnn != null)
+        {
+            buttons.Add(btnn);
+        }
     }
 
     private void UpdateSelectionVisual()
