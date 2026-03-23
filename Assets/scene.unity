@@ -702,6 +702,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   choiceButtonPrefab: {fileID: 5449084391511520304, guid: aaf9a777f59a62f4ca95fd851b3d3210, type: 3}
   choicesParent: {fileID: 1343420492}
+  buttons: []
+  cnt: 0
 --- !u!1 &1390368858
 GameObject:
   m_ObjectHideFlags: 0
