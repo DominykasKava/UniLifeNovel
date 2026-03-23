@@ -26,6 +26,7 @@ public class DialogueUIController : MonoBehaviour
         if (container == null && dialogueText != null)
             container = dialogueText.transform.parent.gameObject;
 
+        // Jei sfxSource nenurodytas – bandome paimti iš šio GO
         if (sfxSource == null)
             sfxSource = GetComponent<AudioSource>();
     }
@@ -113,7 +114,6 @@ public class DialogueUIController : MonoBehaviour
             btn.onClick.AddListener(() => OnChoiceClicked(capturedIndex));
         }
 
-        // Jei turi atskirą „choices panel“ – įjunk ją čia:
         if (!choicesContainer.gameObject.activeSelf)
             choicesContainer.gameObject.SetActive(true);
     }
@@ -126,20 +126,30 @@ public class DialogueUIController : MonoBehaviour
             if (b != null) Destroy(b.gameObject);
 
         _spawnedButtons.Clear();
-
-        // Jei turi atskirą panelę ir ją slepi – padaryk:
-        // choicesContainer.gameObject.SetActive(false);
     }
 
     public void OnChoiceClicked(int index)
     {
+        // NAUJA: GARSAS
         PlayChoiceSound();
+
+        // PEREJIMAS
         DialogueManager.Instance.Choose(index);
     }
+
+    // -------------------------
+    //  PASIRINKIMO GARSAS
+    // -------------------------
 
     public void PlayChoiceSound()
     {
         if (sfxSource != null && choiceClickSound != null)
+        {
             sfxSource.PlayOneShot(choiceClickSound);
+        }
+        else
+        {
+            Debug.LogWarning("DialogueUIController: Pasirinkimo garsas neįkeltas / nėra AudioSource.");
+        }
     }
 }

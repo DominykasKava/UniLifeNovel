@@ -11,16 +11,8 @@ public class ChoiceClickTrigger : MonoBehaviour
     private void Awake()
     {
         _btn = GetComponent<Button>();
-
-        // jei nepriskirta Inspector'iuje – susirandame automatiškai
         if (uiController == null)
-        {
-#if UNITY_2023_1_OR_NEWER
-            uiController = Object.FindFirstObjectByType<DialogueUIController>();
-#else
-            uiController = Object.FindObjectOfType<DialogueUIController>();
-#endif
-        }
+            uiController = Object.FindAnyObjectByType<DialogueUIController>();
     }
 
     private void OnEnable()
