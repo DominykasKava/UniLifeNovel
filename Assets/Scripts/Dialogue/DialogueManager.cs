@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class DialogueManager : MonoBehaviour
     public PortraitController portraitController;
     public BackgroundLoader backgroundLoader;
     public DialogueUI dialogueUI;
-
+    public ChoiceUIManager choiceUI;
     private DialogueLoader loader;
     private DialogueNode currentNode;
 
@@ -60,11 +61,25 @@ public class DialogueManager : MonoBehaviour
         if (currentNode == null)
             return;
 
+        if (currentNode.choices != null && currentNode.choices.Length > 0)
+        {
+            return;
+        }
+
         // Jei nėra „next“ – dialogas pasibaigė
         if (string.IsNullOrEmpty(currentNode.next))
         {
             OnDialogueFinished?.Invoke();
             Debug.Log("Dialogas pasibaigė");
+            return;
+        }
+
+        var nextNode = loader.GetNode(currentNode.next);
+
+        if (!CheckCondition(nextNode))
+        {
+            OnDialogueFinished?.Invoke();
+            Debug.Log("Conditions nepasiektos");
             return;
         }
 
@@ -92,19 +107,22 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        var nextId = currentNode.choices[index].next;
-        if (string.IsNullOrWhiteSpace(nextId))
+        var choice = currentNode.choices[index];
+        if (!string.IsNullOrEmpty(choice.callback))
         {
-            Debug.LogWarning("DialogueManager.Choose: pasirinkimas neturi next ID.");
-            return;
+            HandleCallBack(choice.callback);
         }
 
-        GoTo(nextId);
 
-        // Po perėjimo – jei sutinkame Jump, „praslystame“
-        ResolveAutoJumps();
+        if (!string.IsNullOrWhiteSpace(choice.next))
+        {
+            GoTo(choice.next);
 
-        UpdateUI();
+            // Po perėjimo – jei sutinkame Jump, „praslystame“
+            ResolveAutoJumps();
+
+            UpdateUI();
+        }
     }
 
     /// <summary> Pereina į konkretų mazgą pagal ID. </summary>
@@ -130,24 +148,44 @@ public class DialogueManager : MonoBehaviour
     {
         int hops = 0;
 
-        while (currentNode != null &&
-               !string.IsNullOrWhiteSpace(currentNode.jumpTo) &&
-               hops++ < MaxAutoJumps)
+        while (currentNode != null && hops++ < MaxAutoJumps)
         {
-            var targetId = currentNode.jumpTo;
-            var target = loader.GetNode(targetId);
-            if (target == null)
+            // CONDITIONS
+            if (!CheckCondition(currentNode))
             {
-                Debug.LogError($"DialogueManager: Jump tikslas nerastas: '{targetId}' (šaltinis: '{currentNode.id}').");
-                break;
+                Debug.Log("Conditions nepasiektos node");
+
+                if (string.IsNullOrEmpty(currentNode.next))
+                {
+                    currentNode = null;
+                    OnDialogueFinished?.Invoke();
+                    return;
+                }
+
+                currentNode = loader.GetNode(currentNode.next);
+                continue;
             }
-            currentNode = target;
-            // ciklas tęsis – jei ir naujasis mazgas yra Jump, persoksime toliau
+
+            // JUMP
+            if (!string.IsNullOrWhiteSpace(currentNode.jumpTo))
+            {
+                var target = loader.GetNode(currentNode.jumpTo);
+                if (target == null)
+                {
+                    Debug.LogError("Jump target nerastas: " + currentNode.jumpTo);
+                    return;
+                }
+
+                currentNode = target;
+                continue;
+            }
+
+            break;
         }
 
         if (hops >= MaxAutoJumps)
         {
-            Debug.LogError("DialogueManager: per daug automatinų Jump perėjimų (galimas begalinis ciklas).");
+            Debug.LogError("Per daug Jump – galimas loop");
         }
     }
 
@@ -182,5 +220,49 @@ public class DialogueManager : MonoBehaviour
         // Foninis paveikslas (jei yra duomenyse)
         if (backgroundLoader != null && !string.IsNullOrEmpty(currentNode.background))
             backgroundLoader.SetBackground(currentNode.background);
+
+        if (choiceUI != null)
+        {
+            if (currentNode.choices != null && currentNode.choices.Length > 0)
+            {
+                choiceUI.ShowChoices(new List<Choices>(currentNode.choices));
+            }
+            else
+            {
+                choiceUI.ClearChoices();
+            }
+        }
+    }
+
+    private bool CheckCondition(DialogueNode node)
+    {
+        if (node.conditions == null || node.conditions.Length == 0)
+        {
+            return true;
+        }
+        foreach (var condition in node.conditions)
+        {
+            if (!condition.Evaluate())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void HandleCallBack(string callBack)
+    {
+        switch (callBack)
+        {
+            case "GainTrust":
+                GameVariables.Instance.AddInt("trust", 10);
+                Debug.Log("Trust +10");
+                break;
+
+            case "LoseTrust":
+                GameVariables.Instance.AddInt("trust", -10);
+                Debug.Log("Trust -10");
+                break;
+        }
     }
 }

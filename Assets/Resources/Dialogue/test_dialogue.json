@@ -14,13 +14,6 @@
       "text": "Sveikas! Gali man padeti?",
       "next": "node3",
       "portrait": "ona_smile",
-      "background": "classroom"
-    },
-    {
-      "id": "node3",
-      "speaker": "",
-      "text": "",
-      "portrait": "",
       "background": "classroom",
       "choices": [
         {
@@ -55,7 +48,6 @@
       "id": "secretNode",
       "speaker": "Ona",
       "text": "Kadangi man padejai, turiu tau paslapti!",
-      "next": null,
       "portrait": "ona_wink",
       "background": "hallway",
       "conditions": [
@@ -64,7 +56,45 @@
           "requiredValue": 10,
           "comparison": "GreaterOrEqual"
         }
+      ],
+      "choices": [
+        {
+          "text": "Pasirinkimas 1",
+          "next": "end1"
+        },
+        {
+          "text": "Pasirinkimas 2",
+          "next": "end2"
+        },
+        {
+          "text": "Pasirinkimas 3",
+          "next": "end3"
+        }
       ]
+    },
+    {
+      "id": "end1",
+      "speaker": "Jonas",
+      "text": "Pasirinkai 1",
+      "next": null,
+      "portrait": "jonas_default",
+      "background": "hallway"
+    },
+    {
+      "id": "end2",
+      "speaker": "Jonas",
+      "text": "Pasirinkai 2",
+      "next": null,
+      "portrait": "jonas_default",
+      "background": "hallway"
+    },
+    {
+      "id": "end3",
+      "speaker": "Jonas",
+      "text": "Pasirinkai 3",
+      "next": null,
+      "portrait": "jonas_default",
+      "background": "hallway"
     }
   ]
 }

@@ -15,9 +15,18 @@ public class ChoiceUIManager : MonoBehaviour
     private List<Button> buttons = new List<Button>();
     private int cnt;
 
+    public bool HasActiveChoices => buttons.Count > 0;
+
     public void ShowChoices(List<Choices> choices)
     {
         ClearChoices();
+
+        Button btnn = choiceButtonPrefab.GetComponent<Button>();
+
+        if (btnn != null)
+        {
+            buttons.Add(btnn);
+        }
 
         foreach (var choice in choices)
         {
@@ -29,7 +38,7 @@ public class ChoiceUIManager : MonoBehaviour
             text.text = choice.text;
 
             // 3) Register button and assign index
-            int choiceIndex = buttons.Count;
+            int choiceIndex = buttons.Count - 1;
 
             Button btn = buttonObj.GetComponent<Button>();
             buttons.Add(btn);
