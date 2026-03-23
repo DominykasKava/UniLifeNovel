@@ -3,7 +3,7 @@
     {
       "id": "start",
       "speaker": "Jonas",
-      "text": "Labas! kaip sekasi? ka snd ka vakare",
+      "text": "Labas! Kaip sekasi?",
       "next": "node2",
       "portrait": "jonas_default",
       "background": "classroom"
@@ -11,16 +11,16 @@
     {
       "id": "node2",
       "speaker": "Ona",
-      "text": "sw sw sw sw sws swww swwwww",
+      "text": "Sveikas! Kaip sekasi?",
       "next": "node3",
       "portrait": "ona_smile",
       "background": "classroom"
     },
     {
       "id": "node3",
-      "speaker": "",
-      "text": "",
-      "portrait": "",
+      "speaker": "swwswswswswsw",
+      "text": "asdasdasdasdasd",
+      "portrait": "ona_smile",
       "background": "classroom",
       "choices": [
         {
@@ -39,7 +39,7 @@
       "id": "help",
       "speaker": "Ona",
       "text": "Ačiū už pagalbą!",
-      "next": null,
+      "next": "secretNode",
       "portrait": "ona_smile",
       "background": "classroom"
     },
@@ -50,6 +50,21 @@
       "next": null,
       "portrait": "ona_smile",
       "background": "classroom"
+    },
+    {
+      "id": "secretNode",
+      "speaker": "Ona",
+      "text": "Kadangi manimi pasitiki, turiu tau paslaptį!",
+      "next": null,
+      "portrait": "ona_smile",
+      "background": "classroom",
+      "conditions": [
+        {
+          "variableName": "trust",
+          "requiredValue": 10,
+          "comparison": "GreaterOrEqual"
+        }
+      ]
     }
   ]
 }

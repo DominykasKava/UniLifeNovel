@@ -18,7 +18,6 @@ public class DialogueManager : MonoBehaviour
     [Header("Dialogue file name (be .json)")]
     public string dialogueFile = "test_dialogue";
 
-    //NAUJA: apsauga nuo nekontroliuojamo Jump ciklo
     private const int MaxAutoJumps = 32;
 
     private void Awake()
@@ -47,6 +46,7 @@ public class DialogueManager : MonoBehaviour
 
         if (currentNode.choices != null && currentNode.choices.Length > 0)
         {
+            UpdateUI();
             return;
         }
 
@@ -60,9 +60,7 @@ public class DialogueManager : MonoBehaviour
         currentNode = loader.GetNode(currentNode.next);
 
         int hops = 0;
-        while (currentNode != null &&
-               !string.IsNullOrEmpty(currentNode.jumpTo) &&
-               hops++ < MaxAutoJumps)
+        while (currentNode != null && !string.IsNullOrEmpty(currentNode.jumpTo) && hops++ < MaxAutoJumps)
         {
             var targetId = currentNode.jumpTo;
             var target = loader.GetNode(targetId);
@@ -72,11 +70,29 @@ public class DialogueManager : MonoBehaviour
                 break;
             }
             currentNode = target; 
+
+            if (target.conditions != null && target.conditions.Length > 0)
+            {
+                bool ok = true;
+                foreach (var condition in target.conditions )
+                {
+                    if (!condition.Evaluate())
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (!ok)
+                {
+                    currentNode = string.IsNullOrEmpty(target.next) ? null : loader.GetNode(target.next);
+                    continue;
+                }
+            }
         }
 
         if (hops >= MaxAutoJumps)
         {
-            Debug.LogError("DialogueManager: per daug automatiných Jump perėjimų (galimas begalinis ciklas).");
+            Debug.LogError("DialogueManager: per daug automatiniu Jump perėjimų (galimas begalinis ciklas).");
         }
 
         UpdateUI();
@@ -87,6 +103,11 @@ public class DialogueManager : MonoBehaviour
     public void Choose(Choices choices)
     {
         if (choices == null) return;
+
+        if (!string.IsNullOrEmpty(choices.callback))
+        {
+            HandleCallBack(choices.callback);
+        }
 
         if (!string.IsNullOrEmpty(choices.next))
         {
@@ -106,7 +127,6 @@ public class DialogueManager : MonoBehaviour
 
         if (dialogueUI != null)
         {
-            // Pastaba: vėliau, kai integruosi "choices", čia perduosi juos trečiu parametru vietoje null
             dialogueUI.DisplayDialogue(currentNode.speaker, currentNode.text, null);
         }
 
@@ -141,5 +161,21 @@ public class DialogueManager : MonoBehaviour
         }
 
         OnLineDisplayed?.Invoke("");
+    }
+
+    private void HandleCallBack(string callBack)
+    {
+        switch (callBack)
+        {
+            case "GainTrust":
+                GameVariables.Instance.AddInt("trust", 10);
+                Debug.Log("Trust +10");
+                break;
+
+            case "LoseTrust":
+                GameVariables.Instance.AddInt("trust", -10);
+                Debug.Log("Trust -10");
+                break;
+        }
     }
 }
