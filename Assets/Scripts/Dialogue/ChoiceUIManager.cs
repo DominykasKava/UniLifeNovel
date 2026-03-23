@@ -11,20 +11,6 @@ public class ChoiceUIManager : MonoBehaviour
     public List<Button> buttons = new List<Button>();
     public int cnt;
 
-    void Start()
-    {
-        
-        List<Choices> choices = new List<Choices>()
-        {
-            new Choices { text = "Option 1" },
-            new Choices { text = "Option 2" },
-            new Choices { text = "Option 3" }
-        };
-
-        ShowChoices(choices);
-        
-    }
-
     public void ShowChoices(List<Choices> choices)
     {
         ClearChoices();
