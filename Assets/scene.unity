@@ -458,6 +458,7 @@ MonoBehaviour:
   portraitController: {fileID: 466297352}
   backgroundLoader: {fileID: 1295845718}
   dialogueUI: {fileID: 9155420295672513635}
+  choiceUI: {fileID: 1343420495}
   dialogueFile: test_dialogue
 --- !u!4 &823086630
 Transform:
@@ -701,6 +702,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   choiceButtonPrefab: {fileID: 5449084391511520304, guid: aaf9a777f59a62f4ca95fd851b3d3210, type: 3}
   choicesParent: {fileID: 1343420492}
+--- !u!1 &1390368858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1390368860}
+  - component: {fileID: 1390368859}
+  m_Layer: 0
+  m_Name: GameVariables
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1390368859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390368858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068fbca7b4a86f44ea6299bd1ba858fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameVariables
+--- !u!4 &1390368860
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390368858}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 696.1589, y: 206.80748, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1730050969
 GameObject:
   m_ObjectHideFlags: 0
@@ -1165,3 +1210,4 @@ SceneRoots:
   - {fileID: 544447764}
   - {fileID: 859631023}
   - {fileID: 1295845719}
+  - {fileID: 1390368860}

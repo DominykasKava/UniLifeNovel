@@ -57,6 +57,32 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        DialogueNode nextNode = loader.GetNode(currentNode.next);
+        if (nextNode == null)
+        {
+            Debug.LogError("Node nerastas: " + currentNode.next);
+            return;
+        }
+
+        if (nextNode.conditions != null && nextNode.conditions.Length > 0)
+        {
+            bool ok = true;
+            foreach (var condition in nextNode.conditions)
+            {
+                if (!condition.Evaluate())
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            if (!ok)
+            {
+                Debug.LogError("Conditions nepasiektos");
+                OnDialogueFinished?.Invoke();
+                return;
+            }
+        }
+
         currentNode = loader.GetNode(currentNode.next);
 
         int hops = 0;

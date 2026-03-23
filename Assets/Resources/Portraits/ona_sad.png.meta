@@ -1,15 +1,15 @@
 fileFormatVersion: 2
-guid: 03c2b3b5cf7f5b5409798f0da3f099bc
+guid: b45e6f8dff4fc5c4a89df0001679a6ad
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7989150289162791019
-    second: ona_smile_0
+      213: 6281360934237866715
+    second: ona_sad_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ona_smile_0
+      name: ona_sad_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 633
-        height: 633
+        width: 292
+        height: 285
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b68e1c21cd92fde60800000000000000
-      internalID: 7989150289162791019
+      spriteID: bda83475d70eb2750800000000000000
+      internalID: 6281360934237866715
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ona_smile_0: 7989150289162791019
+      ona_sad_0: 6281360934237866715
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -11,20 +11,20 @@
     {
       "id": "node2",
       "speaker": "Ona",
-      "text": "Sveikas! Kaip sekasi?",
+      "text": "Sveikas! Gali man padeti?",
       "next": "node3",
       "portrait": "ona_smile",
       "background": "classroom"
     },
     {
       "id": "node3",
-      "speaker": "swwswswswswsw",
-      "text": "asdasdasdasdasd",
-      "portrait": "ona_smile",
+      "speaker": "",
+      "text": "",
+      "portrait": "",
       "background": "classroom",
       "choices": [
         {
-          "text": "Padėti Onai",
+          "text": "Padeti",
           "next": "help",
           "callback": "GainTrust"
         },
@@ -38,7 +38,7 @@
     {
       "id": "help",
       "speaker": "Ona",
-      "text": "Ačiū už pagalbą!",
+      "text": "Aciu uz pagalba!",
       "next": "secretNode",
       "portrait": "ona_smile",
       "background": "classroom"
@@ -46,18 +46,18 @@
     {
       "id": "ignore",
       "speaker": "Ona",
-      "text": "Hm… gal kitą kartą.",
-      "next": null,
-      "portrait": "ona_smile",
+      "text": "Kodel mane ignoruoji?",
+      "next": "secretNode",
+      "portrait": "ona_sad",
       "background": "classroom"
     },
     {
       "id": "secretNode",
       "speaker": "Ona",
-      "text": "Kadangi manimi pasitiki, turiu tau paslaptį!",
+      "text": "Kadangi man padejai, turiu tau paslapti!",
       "next": null,
-      "portrait": "ona_smile",
-      "background": "classroom",
+      "portrait": "ona_wink",
+      "background": "hallway",
       "conditions": [
         {
           "variableName": "trust",
