@@ -61,7 +61,8 @@ public class DialogueManager : MonoBehaviour
         if (currentNode == null)
             return;
 
-        if (currentNode.choices != null && currentNode.choices.Length > 0)
+        if ((currentNode.choices != null && currentNode.choices.Length > 0) ||
+    (choiceUI != null && choiceUI.HasActiveChoices))
         {
             return;
         }
