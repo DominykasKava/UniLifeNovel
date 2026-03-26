@@ -53,6 +53,12 @@ public class ChoiceUIManager : MonoBehaviour
                 // Dialogo logika
                 DialogueManager.Instance.Choose(choiceIndex);
             });
+
+            ChoiceAnimation anim = buttonObj.GetComponent<ChoiceAnimation>();
+            if (anim != null)
+            {
+                anim.PlayShow();
+            }
         }
 
         cnt = buttons.Count > 0 ? 0 : -1;
@@ -62,7 +68,18 @@ public class ChoiceUIManager : MonoBehaviour
     public void ClearChoices()
     {
         foreach (Transform child in choicesParent)
-            Destroy(child.gameObject);
+        {
+            ChoiceAnimation anim = child.GetComponent<ChoiceAnimation>();
+            if (anim != null)
+            {
+                anim.PlayHide();
+                Destroy(child.gameObject, 0.3f);
+            }
+            else
+            {
+                Destroy(child.gameObject);
+            }
+        }
 
         buttons.Clear();
         cnt = -1;
@@ -72,10 +89,16 @@ public class ChoiceUIManager : MonoBehaviour
     {
         for (int i = 0; i < buttons.Count; i++)
         {
+            var colors = buttons[i].colors;
             if (i == cnt)
-                buttons[i].transform.localScale = new Vector3(1.1f, 1.1f, 1f);
+            {
+                colors.normalColor = new Color(1f, 0.95f, 0.7f);
+            }
             else
-                buttons[i].transform.localScale = Vector3.one;
+            {
+                colors.normalColor = Color.white; // 
+            }
+            buttons[i].colors = colors;
         }
     }
 
