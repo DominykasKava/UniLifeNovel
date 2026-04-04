@@ -26,6 +26,12 @@ public class SceneController : MonoBehaviour
             Debug.Log("SKIP paspaustas.");
             StopDialogue();
         }
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Debug.Log("Restart dialoga");
+            StartDialogue();
+        }
     }
 
     /// <summary>
@@ -33,6 +39,11 @@ public class SceneController : MonoBehaviour
     /// </summary>
     public void StartDialogue()
     {
+        if (GameVariables.Instance != null)
+        {
+            GameVariables.Instance.SetInt("trust", 0);
+        }
+
         if (dialogueSystem != null)
         {
             dialogueSystem.StartDialogue("start");

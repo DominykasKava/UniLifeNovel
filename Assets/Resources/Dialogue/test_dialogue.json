@@ -3,7 +3,7 @@
     {
       "id": "start",
       "speaker": "Jonas",
-      "text": "Labas! Kaip sekasi?",
+      "text": "Labas! Ar jau pasiruosei egzaminui?",
       "next": "node2",
       "portrait": "jonas_default",
       "background": "classroom"
@@ -11,18 +11,18 @@
     {
       "id": "node2",
       "speaker": "Ona",
-      "text": "Sveikas! Gali man padeti?",
-      "next": "node3",
+      "text": "Nelabai... Gali man padeti pasiruosti?",
+      "next": null,
       "portrait": "ona_smile",
       "background": "classroom",
       "choices": [
         {
-          "text": "Padeti",
+          "text": "Faktas",
           "next": "help",
           "callback": "GainTrust"
         },
         {
-          "text": "Ignoruoti",
+          "text": "Ne, neturiu laiko.",
           "next": "ignore",
           "callback": "LoseTrust"
         }
@@ -31,7 +31,7 @@
     {
       "id": "help",
       "speaker": "Ona",
-      "text": "Aciu uz pagalba!",
+      "text": "Aciu! Zinojau, kad galiu tavimi pasitiketi.",
       "next": "secretNode",
       "portrait": "ona_smile",
       "background": "classroom"
@@ -39,7 +39,7 @@
     {
       "id": "ignore",
       "speaker": "Ona",
-      "text": "Kodel mane ignoruoji?",
+      "text": "Supratau... Bandysiu viena.",
       "next": "secretNode",
       "portrait": "ona_sad",
       "background": "classroom"
@@ -47,7 +47,7 @@
     {
       "id": "secretNode",
       "speaker": "Ona",
-      "text": "Kadangi man padejai, turiu tau paslapti!",
+      "text": "Palauk! Radau kazka keisto koridoriuje. Ka daryti su siuo rasteliu?",
       "portrait": "ona_wink",
       "background": "hallway",
       "conditions": [
@@ -59,15 +59,15 @@
       ],
       "choices": [
         {
-          "text": "Pasirinkimas 1",
+          "text": "Atiduoti destytojui",
           "next": "end1"
         },
         {
-          "text": "Pasirinkimas 2",
+          "text": "Perskaityti",
           "next": "end2"
         },
         {
-          "text": "Pasirinkimas 3",
+          "text": "Palikti vietoje",
           "next": "end3"
         }
       ]
@@ -75,7 +75,7 @@
     {
       "id": "end1",
       "speaker": "Jonas",
-      "text": "Pasirinkai 1",
+      "text": "Gerai padareme. Destytojas padekojo.",
       "next": null,
       "portrait": "jonas_default",
       "background": "hallway"
@@ -83,7 +83,7 @@
     {
       "id": "end2",
       "speaker": "Jonas",
-      "text": "Pasirinkai 2",
+      "text": "Tai rytojaus egzamino atsakymai. Idomu...",
       "next": null,
       "portrait": "jonas_default",
       "background": "hallway"
@@ -91,7 +91,7 @@
     {
       "id": "end3",
       "speaker": "Jonas",
-      "text": "Pasirinkai 3",
+      "text": "Palikome rasteli. Kazkas kitas ji ras.",
       "next": null,
       "portrait": "jonas_default",
       "background": "hallway"
