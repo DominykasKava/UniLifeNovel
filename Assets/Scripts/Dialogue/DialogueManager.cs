@@ -326,5 +326,10 @@ public class DialogueManager : MonoBehaviour
 
         Debug.Log("Dialogas išsaugotas į: " + path);
     }
+
+    public void QuickLoad()
+    {
+        LoadFromFile();
+    }
 }
 
