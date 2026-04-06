@@ -205,6 +205,7 @@ public class DialogueManager : MonoBehaviour
 
         // Antrinis UI (jei naudoji DialogueUIController su atskiru TMP tekstu)
         OnLineDisplayed?.Invoke(currentNode.text ?? string.Empty);
+        DialogueBacklog.AddLine(currentNode.text);
 
         // Vardas viršuje (jei naudoji)
         if (characterDisplay != null)
