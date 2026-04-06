@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -266,4 +267,64 @@ public class DialogueManager : MonoBehaviour
                 break;
         }
     }
+
+
+
+
+    public void LoadFromFile(string fileName = "dialogue_save.json")
+    {
+        string path = Path.Combine(Application.persistentDataPath, fileName);
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning("Save failas nerastas: " + path);
+            return;
+        }
+
+        string json = File.ReadAllText(path);
+        DialogueSaveData data = JsonUtility.FromJson<DialogueSaveData>(json);
+
+        if (data == null || string.IsNullOrEmpty(data.nodeId))
+        {
+            Debug.LogWarning("Neleistinas arba tuščias save failas.");
+            return;
+        }
+
+        // Nustatome currentNode
+        DialogueNode loadedNode = loader.GetNode(data.nodeId);
+
+        if (loadedNode == null)
+        {
+            Debug.LogError("Dialogo mazgas nerastas pagal id iš save failo: " + data.nodeId);
+            return;
+        }
+
+        currentNode = loadedNode;
+
+        // Parodome UI
+        UpdateUI();
+
+        Debug.Log("Dialogas užkrautas nuo mazgo: " + data.nodeId);
+    }
+
+
+    public void SaveToFile(string fileName = "dialogue_save.json")
+    {
+        if (currentNode == null)
+        {
+            Debug.LogWarning("Nėra aktyvaus mazgo, kurį galima būtų išsaugoti.");
+            return;
+        }
+
+        DialogueSaveData data = new DialogueSaveData();
+        data.nodeId = currentNode.id;
+
+        string json = JsonUtility.ToJson(data, true);
+        string path = Path.Combine(Application.persistentDataPath, fileName);
+
+        File.WriteAllText(path, json);
+
+        Debug.Log("Dialogas išsaugotas į: " + path);
+    }
 }
+
