@@ -7,6 +7,6 @@ public class SaveData
 {
     public string currentNodeID;
     public int dialogueIndex;
-    public Dictionary<string, int> variables;
-
+    public List<IntVariableData> intVariables = new List<IntVariableData>();
+    public List<BoolVariableData> boolVariables = new List<BoolVariableData>();
 }

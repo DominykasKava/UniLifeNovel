@@ -317,8 +317,27 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        DialogueSaveData data = new DialogueSaveData();
-        data.nodeId = currentNode.id;
+        SaveData data = new SaveData();
+        data.currentNodeID = currentNode.id;
+        data.dialogueIndex = 0;
+
+        foreach (var pair in GameVariables.Instance.GetAllInts())
+        {
+            data.intVariables.Add(new IntVariableData
+            {
+                key = pair.Key,
+                value = pair.Value
+            });
+        }
+
+        foreach (var pair in GameVariables.Instance.GetAllBools())
+        {
+            data.boolVariables.Add(new BoolVariableData
+            {
+                key = pair.Key,
+                value = pair.Value
+            });
+        }
 
         string json = JsonUtility.ToJson(data, true);
         string path = Path.Combine(Application.persistentDataPath, fileName);
