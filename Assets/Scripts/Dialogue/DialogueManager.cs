@@ -365,5 +365,74 @@ public class DialogueManager : MonoBehaviour
     {
         LoadFromFile();
     }
+
+    public SaveData CreateSaveData()
+    {
+        if (currentNode == null)
+        {
+            Debug.LogWarning("Nėra aktyvaus mazgo išsaugojimui.");
+            return null;
+        }
+
+        SaveData data = new SaveData();
+        data.currentNodeID = currentNode.id;
+        data.dialogueIndex = 0;
+
+        foreach (var pair in GameVariables.Instance.GetAllInts())
+        {
+            data.intVariables.Add(new IntVariableData
+            {
+                key = pair.Key,
+                value = pair.Value
+            });
+        }
+
+        foreach (var pair in GameVariables.Instance.GetAllBools())
+        {
+            data.boolVariables.Add(new BoolVariableData
+            {
+                key = pair.Key,
+                value = pair.Value
+            });
+        }
+
+        return data;
+    }
+
+    public void LoadFromSaveData(SaveData data)
+    {
+        if (data == null || string.IsNullOrEmpty(data.currentNodeID))
+        {
+            Debug.LogWarning("SaveData tuščias arba neteisingas.");
+            return;
+        }
+
+        DialogueNode loadedNode = loader.GetNode(data.currentNodeID);
+
+        if (loadedNode == null)
+        {
+            Debug.LogError("Mazgas nerastas pagal id: " + data.currentNodeID);
+            return;
+        }
+
+        currentNode = loadedNode;
+
+        GameVariables.Instance.GetAllInts().Clear();
+        GameVariables.Instance.GetAllBools().Clear();
+
+        foreach (var varData in data.intVariables)
+        {
+            GameVariables.Instance.SetInt(varData.key, varData.value);
+        }
+
+        foreach (var varData in data.boolVariables)
+        {
+            GameVariables.Instance.SetBool(varData.key, varData.value);
+        }
+
+        UpdateUI();
+
+        Debug.Log("Dialogas užkrautas nuo mazgo: " + data.currentNodeID);
+    }
 }
 

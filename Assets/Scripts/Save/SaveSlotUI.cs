@@ -6,29 +6,59 @@ public class SaveSlotUI : MonoBehaviour
 {
     public TextMeshProUGUI slotText;
     public Button button;
+    public Button deleteButton;
 
     private int slotIndex;
 
     public void Init(int index)
     {
         slotIndex = index;
+
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnClick);
+        }
+
+        if (deleteButton != null)
+        {
+            deleteButton.onClick.RemoveAllListeners();
+            deleteButton.onClick.AddListener(DeleteSlot);
+        }
+
         UpdateVisual();
     }
 
     public void UpdateVisual()
     {
-        if (SaveSystem.HasSave(slotIndex))
+        bool hasSave = SaveSystem.HasSave(slotIndex);
+
+        if (slotText != null)
         {
-            slotText.text = "Save " + slotIndex;
+            if (hasSave)
+            {
+                slotText.text = "Save " + (slotIndex + 1);
+            }
+            else
+            {
+                slotText.text = "Empty Slot " + (slotIndex + 1);
+            }
         }
-        else
+
+        if (deleteButton != null)
         {
-            slotText.text = "Empty";
+            deleteButton.gameObject.SetActive(hasSave);
         }
     }
 
     public void OnClick()
     {
         SaveLoadMenu.Instance.OnSlotClicked(slotIndex);
+    }
+
+    public void DeleteSlot()
+    {
+        SaveSystem.DeleteSave(slotIndex);
+        SaveLoadMenu.Instance.RefreshAllSlots();
     }
 }

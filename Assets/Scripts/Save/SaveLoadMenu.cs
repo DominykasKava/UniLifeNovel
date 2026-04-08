@@ -4,47 +4,87 @@ public class SaveLoadMenu : MonoBehaviour
 {
     public static SaveLoadMenu Instance;
 
-    public GameObject slotPrefab;
-    public Transform container;
+    public enum MenuMode
+    {
+        Save,
+        Load
+    }
 
-    public int slotCount = 3;
+    public MenuMode currentMode;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    private void Start()
+    public void OpenSaveMenu()
     {
-        CreateSlots();
-    }
-
-    void CreateSlots()
-    {
-        for (int i = 0; i < slotCount; i++)
-        {
-            GameObject obj = Instantiate(slotPrefab, container);
-            SaveSlotUI slot = obj.GetComponent<SaveSlotUI>();
-            slot.Init(i);
-        }
-    }
-
-    public void OnSlotClicked(int index)
-    {
-        Debug.Log("Clicked slot: " + index);
-
-        // Čia vėliau jungsi:
-        // SaveSystem.Save(index);
-        // SaveSystem.Load(index);
-    }
-
-    public void Open()
-    {
+        currentMode = MenuMode.Save;
         gameObject.SetActive(true);
+        RefreshAllSlots();
     }
 
-    public void Close()
+    public void OpenLoadMenu()
+    {
+        currentMode = MenuMode.Load;
+        gameObject.SetActive(true);
+        RefreshAllSlots();
+    }
+
+    public void CloseSaveMenu()
     {
         gameObject.SetActive(false);
+    }
+
+    public void OnSlotClicked(int slotIndex)
+    {
+        if (currentMode == MenuMode.Save)
+        {
+            SaveData data = CreateCurrentSaveData();
+
+            if (data != null)
+            {
+                SaveSystem.SaveGame(slotIndex, data);
+            }
+        }
+        else
+        {
+            SaveData data = SaveSystem.LoadGame(slotIndex);
+
+            if (data != null)
+            {
+                ApplyLoadedData(data);
+                CloseSaveMenu();
+            }
+            else
+            {
+                Debug.Log("Šiame slote nėra save.");
+            }
+        }
+
+        RefreshAllSlots();
+    }
+
+    private SaveData CreateCurrentSaveData()
+    {
+        return DialogueManager.Instance.CreateSaveData();
+    }
+
+    private void ApplyLoadedData(SaveData data)
+    {
+        DialogueManager.Instance.LoadFromSaveData(data);
+    }
+
+    public void RefreshAllSlots()
+    {
+        SaveSlotUI[] slots = Object.FindObjectsByType<SaveSlotUI>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
+
+        foreach (SaveSlotUI slot in slots)
+        {
+            slot.UpdateVisual();
+        }
     }
 }
