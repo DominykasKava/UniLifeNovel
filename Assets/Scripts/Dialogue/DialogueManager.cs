@@ -358,6 +358,7 @@ public class DialogueManager : MonoBehaviour
         File.WriteAllText(path, json);
 
         Debug.Log("Dialogas išsaugotas į: " + path);
+        Debug.Log("Save JSON: " + json);
     }
 
     public void QuickLoad()
