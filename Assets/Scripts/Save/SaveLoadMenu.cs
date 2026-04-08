@@ -31,6 +31,18 @@ public class SaveLoadMenu : MonoBehaviour
         RefreshAllSlots();
     }
 
+    public void QuickSave()
+    {
+        SaveData data = CreateCurrentSaveData();
+
+        if (data != null)
+        {
+            SaveSystem.SaveGame(0, data);
+            RefreshAllSlots();
+            Debug.Log("Quick save padarytas");
+        }
+    }
+
     public void CloseSaveMenu()
     {
         gameObject.SetActive(false);
