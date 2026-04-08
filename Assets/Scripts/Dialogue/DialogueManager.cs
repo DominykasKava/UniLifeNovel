@@ -283,29 +283,42 @@ public class DialogueManager : MonoBehaviour
         }
 
         string json = File.ReadAllText(path);
-        DialogueSaveData data = JsonUtility.FromJson<DialogueSaveData>(json);
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        if (data == null || string.IsNullOrEmpty(data.nodeId))
+        if (data == null || string.IsNullOrEmpty(data.currentNodeID))
         {
             Debug.LogWarning("Neleistinas arba tuščias save failas.");
             return;
         }
 
         // Nustatome currentNode
-        DialogueNode loadedNode = loader.GetNode(data.nodeId);
+        DialogueNode loadedNode = loader.GetNode(data.currentNodeID);
 
         if (loadedNode == null)
         {
-            Debug.LogError("Dialogo mazgas nerastas pagal id iš save failo: " + data.nodeId);
+            Debug.LogError("Dialogo mazgas nerastas pagal id iš save failo: " + data.currentNodeID);
             return;
         }
 
         currentNode = loadedNode;
 
+        GameVariables.Instance.GetAllInts().Clear();
+        GameVariables.Instance.GetAllBools().Clear();
+
+        foreach(var varData in data.intVariables)
+        {
+            GameVariables.Instance.SetInt(varData.key, varData.value);
+        }
+
+        foreach (var varData in data.boolVariables)
+        {
+            GameVariables.Instance.SetBool(varData.key, varData.value);
+        }
+
         // Parodome UI
         UpdateUI();
 
-        Debug.Log("Dialogas užkrautas nuo mazgo: " + data.nodeId);
+        Debug.Log("Dialogas užkrautas nuo mazgo: " + data.currentNodeID);
     }
 
 
