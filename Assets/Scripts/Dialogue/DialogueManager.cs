@@ -235,6 +235,8 @@ public class DialogueManager : MonoBehaviour
                 choiceUI.ClearChoices();
             }
         }
+
+        ObjectiveTracker.Instance?.EvaluateObjectives();
     }
 
     private bool CheckCondition(DialogueNode node)
@@ -268,9 +270,6 @@ public class DialogueManager : MonoBehaviour
                 break;
         }
     }
-
-
-
 
     public void LoadFromFile(string fileName = "dialogue_save.json")
     {

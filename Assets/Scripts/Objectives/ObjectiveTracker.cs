@@ -128,5 +128,30 @@ public class ObjectiveTracker : MonoBehaviour
         MiniObjective objective = GetObjective(id);
         return objective != null && objective.state == ObjectiveState.Active;
     }
+
+    public void EvaluateObjectives()
+    {
+        foreach (var objective in objectives)
+        {
+            if (objective == null)
+            {
+                continue;
+            }
+
+            if (objective.state == ObjectiveState.Locked && objective.CanActivate())
+            {
+                objective.state = ObjectiveState.Active;
+                objective.progress = Mathf.Max(objective.progress, 0f);
+                OnObjectiveActivated?.Invoke(objective);
+            }
+
+            if (objective.state == ObjectiveState.Active && objective.CanComplete())
+            {
+                objective.state = ObjectiveState.Completed;
+                objective.progress = 1f;
+                OnObjectiveCompleted?.Invoke(objective);
+            }
+        }
+    }
 }
 
