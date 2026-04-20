@@ -257,6 +257,11 @@ public class DialogueManager : MonoBehaviour
 
     private void HandleCallBack(string callBack)
     {
+        if (string.IsNullOrWhiteSpace(callBack))
+        {
+            return;
+        }
+
         switch (callBack)
         {
             case "GainTrust":
@@ -268,6 +273,68 @@ public class DialogueManager : MonoBehaviour
                 GameVariables.Instance.AddInt("trust", -10);
                 Debug.Log("Trust -10");
                 break;
+
+            default:
+                HandleObjectiveAndVariableCallback(callBack);
+                break;
+        }
+        ObjectiveTracker.Instance?.EvaluateObjectives();
+    }
+
+    private void HandleObjectiveAndVariableCallback(string callBack)
+    {
+        if (callBack.StartsWith("AddInt:"))
+        {
+            string data = callBack.Replace("AddInt:", "").Trim();
+            string[] parts = data.Split(':');
+
+            if (parts.Length == 2 && int.TryParse(parts[1], out int amount))
+            {
+                string key = parts[0].Trim();
+                GameVariables.Instance.AddInt(key, amount);
+                Debug.Log($"{key} {(amount >= 0 ? "+" : "")}{amount}");
+            }
+            return;
+        }
+
+        if (callBack.StartsWith("SetInt:"))
+        {
+            string data = callBack.Replace("SetInt:", "").Trim();
+            string[] parts = data.Split(':');
+
+            if (parts.Length == 2 && int.TryParse(parts[1], out int value))
+            {
+                string key = parts[0].Trim();
+                GameVariables.Instance.SetInt(key, value);
+                Debug.Log($"{key} set to {value}");
+            }
+            return;
+        }
+
+        if (callBack.StartsWith("ActivateObjective:"))
+        {
+            string objectiveID = callBack.Replace("ActivateObjective:", "").Trim();
+            ObjectiveTracker.Instance?.ActivateObjective(objectiveID);
+            return;
+        }
+
+        if (callBack.StartsWith("CompleteObjective:"))
+        {
+            string objectiveID = callBack.Replace("CompleteObjective:", "").Trim();
+            ObjectiveTracker.Instance?.CompleteObjective(objectiveID);
+            return;
+        }
+
+        if (callBack.StartsWith("SetObjectiveProgress:"))
+        {
+            string data = callBack.Replace("SetObjectiveProgress:", "").Trim();
+            string[] parts = data.Split('|');
+
+            if (parts.Length == 2 && float.TryParse(parts[1], out float progress))
+            {
+                string objectiveID = parts[0].Trim();
+                ObjectiveTracker.Instance?.SetProgress(objectiveID, progress);
+            }
         }
     }
 
@@ -304,7 +371,7 @@ public class DialogueManager : MonoBehaviour
         GameVariables.Instance.GetAllInts().Clear();
         GameVariables.Instance.GetAllBools().Clear();
 
-        foreach(var varData in data.intVariables)
+        foreach (var varData in data.intVariables)
         {
             GameVariables.Instance.SetInt(varData.key, varData.value);
         }
