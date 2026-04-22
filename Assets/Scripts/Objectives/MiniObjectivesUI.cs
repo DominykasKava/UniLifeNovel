@@ -9,7 +9,9 @@ public class MiniObjectivesUI : MonoBehaviour
     {
         public string title;
         public string description;
-        public string status;
+        public int currentValue;
+        public int targetValue;
+        public bool isCompleted;
     }
 
     [Header("Window")]
@@ -53,7 +55,13 @@ public class MiniObjectivesUI : MonoBehaviour
 
             if (itemUI != null)
             {
-                itemUI.Setup(data.title, data.description, data.status);
+                itemUI.Setup(
+                    data.title,
+                    data.description,
+                    data.currentValue,
+                    data.targetValue,
+                    data.isCompleted
+                );
             }
 
             spawnedItems.Add(item);
@@ -77,28 +85,30 @@ public class MiniObjectivesUI : MonoBehaviour
     private void RefreshEmptyState()
     {
         if (emptyText != null)
-        {
             emptyText.gameObject.SetActive(spawnedItems.Count == 0);
-        }
     }
 
     private void ShowDummyData()
     {
         List<MiniObjectiveViewData> demoObjectives = new List<MiniObjectiveViewData>
+    {
+        new MiniObjectiveViewData
         {
-            new MiniObjectiveViewData
-            {
-                title = "Find the key",
-                description = "Search the classroom for the missing key.",
-                status = "Active"
-            },
-            new MiniObjectiveViewData
-            {
-                title = "Talk to Emma",
-                description = "Ask Emma about yesterday's event.",
-                status = "Optional"
-            }
-        };
+            title = "Find the key",
+            description = "Search the classroom for the missing key.",
+            currentValue = 1,
+            targetValue = 3,
+            isCompleted = false
+        },
+        new MiniObjectiveViewData
+        {
+            title = "Talk to Emma",
+            description = "Ask Emma about yesterday's event.",
+            currentValue = 1,
+            targetValue = 1,
+            isCompleted = true
+        }
+    };
 
         DisplayObjectives(demoObjectives);
     }
