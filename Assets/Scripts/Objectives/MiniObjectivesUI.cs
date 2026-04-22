@@ -1,33 +1,45 @@
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class MiniObjectivesUI : MonoBehaviour
 {
-    [System.Serializable]
-    public class MiniObjectiveViewData
-    {
-        public string title;
-        public string description;
-        public int currentValue;
-        public int targetValue;
-        public bool isCompleted;
-    }
-
     [Header("Window")]
     [SerializeField] private GameObject windowRoot;
     [SerializeField] private Transform objectivesContainer;
     [SerializeField] private GameObject objectiveItemPrefab;
     [SerializeField] private TMP_Text emptyText;
 
-    private readonly List<GameObject> spawnedItems = new List<GameObject>();
+    private readonly List<GameObject> spawnedItems = new();
+    private readonly Dictionary<string, MiniObjectiveItemUI> itemMap = new();
+
     private bool isVisible = true;
 
     private void Start()
     {
-        ShowDummyData();
+        BuildObjectivesList();
         RefreshEmptyState();
         SetWindowVisible(isVisible);
+    }
+
+    private void OnEnable()
+    {
+        if (ObjectiveTracker.Instance != null)
+        {
+            ObjectiveTracker.Instance.OnObjectiveActivated += HandleObjectiveActivated;
+            ObjectiveTracker.Instance.OnObjectiveCompleted += HandleObjectiveCompleted;
+            ObjectiveTracker.Instance.OnObjectiveProgressChanged += HandleObjectiveProgressChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (ObjectiveTracker.Instance != null)
+        {
+            ObjectiveTracker.Instance.OnObjectiveActivated -= HandleObjectiveActivated;
+            ObjectiveTracker.Instance.OnObjectiveCompleted -= HandleObjectiveCompleted;
+            ObjectiveTracker.Instance.OnObjectiveProgressChanged -= HandleObjectiveProgressChanged;
+        }
     }
 
     public void ToggleWindow()
@@ -44,42 +56,84 @@ public class MiniObjectivesUI : MonoBehaviour
             windowRoot.SetActive(visible);
     }
 
-    public void DisplayObjectives(List<MiniObjectiveViewData> objectives)
+    private void BuildObjectivesList()
     {
-        ClearObjectives();
+        ClearSpawnedItems();
 
-        foreach (MiniObjectiveViewData data in objectives)
+        if (ObjectiveTracker.Instance == null)
+            return;
+
+        List<MiniObjective> objectives = ObjectiveTracker.Instance.GetAllObjectives();
+
+        foreach (MiniObjective objective in objectives)
         {
-            GameObject item = Instantiate(objectiveItemPrefab, objectivesContainer);
-            MiniObjectiveItemUI itemUI = item.GetComponent<MiniObjectiveItemUI>();
+            if (objective == null)
+                continue;
 
-            if (itemUI != null)
-            {
-                itemUI.Setup(
-                    data.title,
-                    data.description,
-                    data.currentValue,
-                    data.targetValue,
-                    data.isCompleted
-                );
-            }
+            if (objective.state == ObjectiveState.Locked)
+                continue;
 
-            spawnedItems.Add(item);
+            CreateObjectiveItem(objective);
         }
+    }
 
+    private void CreateObjectiveItem(MiniObjective objective)
+    {
+        if (objectiveItemPrefab == null || objectivesContainer == null || objective == null)
+            return;
+
+        GameObject itemObject = Instantiate(objectiveItemPrefab, objectivesContainer);
+        spawnedItems.Add(itemObject);
+
+        MiniObjectiveItemUI itemUI = itemObject.GetComponent<MiniObjectiveItemUI>();
+
+        if (itemUI != null)
+        {
+            itemUI.Setup(
+                objective.title,
+                objective.description,
+                objective.progress,
+                objective.state == ObjectiveState.Completed
+            );
+
+            if (!itemMap.ContainsKey(objective.id))
+                itemMap.Add(objective.id, itemUI);
+        }
+    }
+
+    private void HandleObjectiveActivated(MiniObjective objective)
+    {
+        if (objective == null)
+            return;
+
+        if (itemMap.ContainsKey(objective.id))
+            return;
+
+        CreateObjectiveItem(objective);
         RefreshEmptyState();
     }
 
-    public void ClearObjectives()
+    private void HandleObjectiveProgressChanged(MiniObjective objective)
     {
-        for (int i = 0; i < spawnedItems.Count; i++)
-        {
-            if (spawnedItems[i] != null)
-                Destroy(spawnedItems[i]);
-        }
+        if (objective == null)
+            return;
 
-        spawnedItems.Clear();
-        RefreshEmptyState();
+        if (itemMap.TryGetValue(objective.id, out MiniObjectiveItemUI itemUI))
+        {
+            itemUI.UpdateProgress(objective.progress);
+
+            if (objective.state == ObjectiveState.Completed)
+                itemUI.MarkCompleted();
+        }
+    }
+
+    private void HandleObjectiveCompleted(MiniObjective objective)
+    {
+        if (objective == null)
+            return;
+
+        if (itemMap.TryGetValue(objective.id, out MiniObjectiveItemUI itemUI))
+            itemUI.MarkCompleted();
     }
 
     private void RefreshEmptyState()
@@ -88,28 +142,15 @@ public class MiniObjectivesUI : MonoBehaviour
             emptyText.gameObject.SetActive(spawnedItems.Count == 0);
     }
 
-    private void ShowDummyData()
+    private void ClearSpawnedItems()
     {
-        List<MiniObjectiveViewData> demoObjectives = new List<MiniObjectiveViewData>
-    {
-        new MiniObjectiveViewData
+        foreach (GameObject item in spawnedItems)
         {
-            title = "Find the key",
-            description = "Search the classroom for the missing key.",
-            currentValue = 1,
-            targetValue = 3,
-            isCompleted = false
-        },
-        new MiniObjectiveViewData
-        {
-            title = "Talk to Emma",
-            description = "Ask Emma about yesterday's event.",
-            currentValue = 1,
-            targetValue = 1,
-            isCompleted = true
+            if (item != null)
+                Destroy(item);
         }
-    };
 
-        DisplayObjectives(demoObjectives);
+        spawnedItems.Clear();
+        itemMap.Clear();
     }
 }
