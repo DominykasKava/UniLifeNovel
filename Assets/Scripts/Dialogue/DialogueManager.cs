@@ -262,6 +262,28 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        // formatas: "CHAPTER:2"
+        if (callBack.StartsWith("CHAPTER:"))
+        {
+            string data = callBack.Replace("CHAPTER:", "").Trim();
+
+            if (int.TryParse(data, out int chapterNumber))
+            {
+                ChapterManager.Instance?.SetChapter(chapterNumber);
+                Debug.Log("Chapter pakeistas į: " + chapterNumber);
+            }
+            return;
+        }
+
+        // formatas: "OBJ:talk_to_teacher"
+        if (callBack.StartsWith("OBJ:"))
+        {
+            string objectiveId = callBack.Replace("OBJ:", "").Trim();
+            ChapterManager.Instance?.CompleteObjective(objectiveId);
+            Debug.Log("Objective atliktas: " + objectiveId);
+            return;
+        }
+
         switch (callBack)
         {
             case "GainTrust":
@@ -357,6 +379,13 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+
+        if (ChapterManager.Instance != null)
+        {
+            ChapterManager.Instance.SetChapter(data.chapter);
+        }
+
+
         // Nustatome currentNode
         DialogueNode loadedNode = loader.GetNode(data.currentNodeID);
 
@@ -399,6 +428,7 @@ public class DialogueManager : MonoBehaviour
         SaveData data = new SaveData();
         data.currentNodeID = currentNode.id;
         data.dialogueIndex = 0;
+        data.chapter = ChapterManager.Instance.GetChapter();
 
         foreach (var pair in GameVariables.Instance.GetAllInts())
         {
@@ -500,5 +530,7 @@ public class DialogueManager : MonoBehaviour
 
         Debug.Log("Dialogas užkrautas nuo mazgo: " + data.currentNodeID);
     }
+
+
 }
 

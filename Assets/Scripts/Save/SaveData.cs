@@ -5,6 +5,7 @@ using System.Collections.Generic;
 [Serializable]
 public class SaveData
 {
+    public int chapter;
     public string currentNodeID;
     public int dialogueIndex;
     public List<IntVariableData> intVariables = new List<IntVariableData>();
