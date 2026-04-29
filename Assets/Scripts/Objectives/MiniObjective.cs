@@ -16,12 +16,12 @@ public class MiniObjective
 
     public List<ObjectiveCondition> activationConditions = new();
     public List<ObjectiveCondition> completionConditions = new();
-
+    public List<ObjectiveCondition> failConditions = new();
     public bool CanActivate()
     {
         if (activationConditions == null || activationConditions.Count == 0)
         {
-            return true;
+            return false;
         }
 
         foreach (var condition in activationConditions)
@@ -42,6 +42,23 @@ public class MiniObjective
         }
 
         foreach (var condition in completionConditions)
+        {
+            if (!condition.Evaluate())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public bool CanFail()
+    {
+        if (failConditions == null || failConditions.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (var condition in failConditions)
         {
             if (!condition.Evaluate())
             {

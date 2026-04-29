@@ -14,9 +14,11 @@ public class MiniObjectivesUI : MonoBehaviour
     private readonly Dictionary<string, MiniObjectiveItemUI> itemMap = new();
 
     private bool isVisible = true;
+    private bool isSubscribed = false;
 
     private void Start()
     {
+        TrySubscribe();
         BuildObjectivesList();
         RefreshEmptyState();
         SetWindowVisible(isVisible);
@@ -24,22 +26,47 @@ public class MiniObjectivesUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (ObjectiveTracker.Instance != null)
+        TrySubscribe();
+    }
+
+    private void TrySubscribe()
+    {
+        if (isSubscribed)
         {
-            ObjectiveTracker.Instance.OnObjectiveActivated += HandleObjectiveActivated;
-            ObjectiveTracker.Instance.OnObjectiveCompleted += HandleObjectiveCompleted;
-            ObjectiveTracker.Instance.OnObjectiveProgressChanged += HandleObjectiveProgressChanged;
+            return;
         }
+
+        if (ObjectiveTracker.Instance == null)
+        {
+            return;
+        }
+
+        ObjectiveTracker.Instance.OnObjectiveActivated += HandleObjectiveActivated;
+        ObjectiveTracker.Instance.OnObjectiveCompleted += HandleObjectiveCompleted;
+        ObjectiveTracker.Instance.OnObjectiveProgressChanged += HandleObjectiveProgressChanged;
+        ObjectiveTracker.Instance.OnObjectiveFailed += HandleObjectiveFailed;
+
+        isSubscribed = true;
     }
 
     private void OnDisable()
     {
-        if (ObjectiveTracker.Instance != null)
+        Unsubscribe();
+    }
+
+    private void Unsubscribe()
+    {
+        if (!isSubscribed || ObjectiveTracker.Instance == null)
         {
-            ObjectiveTracker.Instance.OnObjectiveActivated -= HandleObjectiveActivated;
-            ObjectiveTracker.Instance.OnObjectiveCompleted -= HandleObjectiveCompleted;
-            ObjectiveTracker.Instance.OnObjectiveProgressChanged -= HandleObjectiveProgressChanged;
+            return;
         }
+
+        ObjectiveTracker.Instance.OnObjectiveActivated -= HandleObjectiveActivated;
+        ObjectiveTracker.Instance.OnObjectiveCompleted -= HandleObjectiveCompleted;
+        ObjectiveTracker.Instance.OnObjectiveProgressChanged -= HandleObjectiveProgressChanged;
+        ObjectiveTracker.Instance.OnObjectiveFailed -= HandleObjectiveFailed;
+
+        isSubscribed = false;
     }
 
     public void ToggleWindow()
@@ -93,7 +120,7 @@ public class MiniObjectivesUI : MonoBehaviour
                 objective.title,
                 objective.description,
                 objective.progress,
-                objective.state == ObjectiveState.Completed
+                objective.state
             );
 
             if (!itemMap.ContainsKey(objective.id))
@@ -121,9 +148,7 @@ public class MiniObjectivesUI : MonoBehaviour
         if (itemMap.TryGetValue(objective.id, out MiniObjectiveItemUI itemUI))
         {
             itemUI.UpdateProgress(objective.progress);
-
-            if (objective.state == ObjectiveState.Completed)
-                itemUI.MarkCompleted();
+            itemUI.SetState(objective.state);
         }
     }
 
@@ -133,7 +158,24 @@ public class MiniObjectivesUI : MonoBehaviour
             return;
 
         if (itemMap.TryGetValue(objective.id, out MiniObjectiveItemUI itemUI))
-            itemUI.MarkCompleted();
+        {
+            itemUI.UpdateProgress(objective.progress);
+            itemUI.SetState(objective.state);
+        }
+            
+    }
+
+    private void HandleObjectiveFailed(MiniObjective objective)
+    {
+        if (objective == null)
+        {
+            return;
+        }
+
+        if (itemMap.TryGetValue(objective.id,out MiniObjectiveItemUI itemUI))
+        {
+            itemUI.SetState(ObjectiveState.Failed);
+        }
     }
 
     private void RefreshEmptyState()

@@ -15,6 +15,8 @@ public class DialogueNode
     public string portrait;
     public string background;
 
+    public string callback;
+
     public Choices[] choices;
 
     public DialogueCondition[] conditions;
