@@ -13,6 +13,7 @@ public class ObjectiveTracker : MonoBehaviour
     public event Action<MiniObjective> OnObjectiveActivated;
     public event Action<MiniObjective> OnObjectiveCompleted;
     public event Action<MiniObjective> OnObjectiveProgressChanged;
+    public event Action<MiniObjective> OnObjectiveFailed;
 
     private void Awake()
     {
@@ -93,6 +94,23 @@ public class ObjectiveTracker : MonoBehaviour
         OnObjectiveCompleted?.Invoke(objective);
     }
 
+    public void FailObjective(string id)
+    {
+        MiniObjective objective = GetObjective(id);
+        if (objective == null)
+        {
+            return;
+        }
+
+        if (objective.state == ObjectiveState.Completed || objective.state == ObjectiveState.Failed)
+        {
+            return;
+        }
+
+        objective.state = ObjectiveState.Failed;
+        OnObjectiveFailed?.Invoke(objective);
+    }
+
     public void SetProgress(string id, float value)
     {
         MiniObjective objective = GetObjective(id);
@@ -150,6 +168,12 @@ public class ObjectiveTracker : MonoBehaviour
                 objective.state = ObjectiveState.Completed;
                 objective.progress = 1f;
                 OnObjectiveCompleted?.Invoke(objective);
+            }
+
+            if (objective.state == ObjectiveState.Active && objective.CanFail())
+            {
+                objective.state = ObjectiveState.Failed;
+                OnObjectiveFailed?.Invoke(objective);
             }
         }
     }
