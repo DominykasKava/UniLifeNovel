@@ -3,7 +3,7 @@
     {
       "id": "start",
       "speaker": "Jonas",
-      "text": "Labas! Ar jau pasiruosei egzaminui?",
+      "text": "Labas! Atrodai susirupinusi... Ar viskas gerai?",
       "next": "node2",
       "portrait": "jonas_default",
       "background": "classroom"
@@ -11,27 +11,52 @@
     {
       "id": "node2",
       "speaker": "Ona",
-      "text": "Nelabai... Gali man padeti pasiruosti?",
-      "next": null,
-      "portrait": "ona_smile",
-      "background": "classroom",
-      "choices": [
-        {
-          "text": "Faktas",
-          "next": "help",
-          "callback": "AddInt:trust:10"
-        },
-        {
-          "text": "Ne, neturiu laiko.",
-          "next": "ignore",
-          "callback": "AddInt:trust:-10"
-        }
-      ]
+      "text": "Rytoj egzaminas... o as beveik nieko nesuprantu. Bijau, kad neislaikysiu.",
+      "next": "node3",
+      "portrait": "ona_sad",
+      "background": "classroom"
     },
+{
+  "id": "node3",
+  "speaker": "Ona",
+  "text": "Gal galetum man padeti pasiruosti? Man tikrai praverstu tavo pagalba.",
+  "next": null,
+  "portrait": "ona_sad",
+  "background": "classroom",
+  "callback": "ActivateObjective:help_ona",
+  "choices": [
+    {
+      "text": "Zinoma, padesiu.",
+      "next": "help",
+      "callback": "AddInt:trust:10"
+    },
+    {
+      "text": "Atsiprasau, neturiu laiko.",
+      "next": "ignore",
+      "callback": "AddInt:trust:-10|FailObjective:help_ona"
+    }
+  ]
+},
     {
       "id": "help",
       "speaker": "Ona",
-      "text": "Aciu! Zinojau, kad galiu tavimi pasitiketi.",
+      "text": "Tikrai? Aciu... jauciausi visiskai viena sitoje situacijoje.",
+      "next": "study1",
+      "portrait": "ona_smile",
+      "background": "classroom"
+    },
+    {
+      "id": "study1",
+      "speaker": "Jonas",
+      "text": "Gerai, pradekim nuo sunkiausiu temu. Parodyk, kur stringi.",
+      "next": "study2",
+      "portrait": "jonas_default",
+      "background": "classroom"
+    },
+    {
+      "id": "study2",
+      "speaker": "Ona",
+      "text": "As visiskai nesuprantu sito skyriaus... bet su tavimi kazkaip lengviau.",
       "next": "secretNode",
       "portrait": "ona_smile",
       "background": "classroom"
@@ -39,15 +64,25 @@
     {
       "id": "ignore",
       "speaker": "Ona",
-      "text": "Supratau... Bandysiu viena.",
-      "next": "secretNode",
+      "text": "Suprantu... kiekvienas turi savo reikalu.",
+      "next": "ignore2",
       "portrait": "ona_sad",
       "background": "classroom"
     },
     {
+      "id": "ignore2",
+      "speaker": "Jonas",
+      "text": "...Vis tiek galejau bent pabandyti padeti.",
+      "next": "end_fail",
+      "portrait": "jonas_default",
+      "background": "classroom"
+    },
+
+    {
       "id": "secretNode",
       "speaker": "Ona",
-      "text": "Palauk! Radau kazka keisto koridoriuje. Ka daryti su siuo rasteliu?",
+      "text": "Palauk... eidama koridoriumi radau kazka keisto.",
+      "next": "secretNode2",
       "portrait": "ona_wink",
       "background": "hallway",
       "conditions": [
@@ -56,48 +91,100 @@
           "requiredValue": 10,
           "comparison": "GreaterOrEqual"
         }
-      ],
-      "choices": [
-        {
-          "text": "Atiduoti destytojui",
-          "next": "end1",
-          "callback": "CompleteObjective:help_ona"
-        },
-        {
-          "text": "Perskaityti",
-          "next": "end2",
-          "callback": "CompleteObjective:help_ona"
-        },
-        {
-          "text": "Palikti vietoje",
-          "next": "end3",
-          "callback": "CompleteObjective:help_ona"
-        }
       ]
     },
     {
+  "id": "secretNode2",
+  "speaker": "Ona",
+  "text": "Tai atrodo kaip rytojaus egzamino atsakymai... Ka manai, ka tureciau daryti?",
+  "next": null,
+  "portrait": "ona_wink",
+  "background": "hallway",
+  "choices": [
+    {
+      "text": "Atiduok destytojui",
+      "next": "end1",
+      "callback": "CompleteObjective:help_ona"
+    },
+    {
+      "text": "Perskaitykim kartu",
+      "next": "end2",
+      "callback": "CompleteObjective:help_ona"
+    },
+    {
+      "text": "Palikim vietoje",
+      "next": "end3",
+      "callback": "CompleteObjective:help_ona"
+    }
+  ]
+},
+
+    {
       "id": "end1",
       "speaker": "Jonas",
-      "text": "Gerai padareme. Destytojas padekojo.",
-      "next": null,
+      "text": "Padareme teisingai. Destytojas padekojo.",
+      "next": "end1b",
       "portrait": "jonas_default",
       "background": "hallway"
     },
+    {
+      "id": "end1b",
+      "speaker": "Ona",
+      "text": "Ir net jei egzaminas bus sunkus... jauciuosi labiau pasitikinti savimi.",
+      "next": null,
+      "portrait": "ona_smile",
+      "background": "hallway"
+    },
+
     {
       "id": "end2",
       "speaker": "Jonas",
-      "text": "Tai rytojaus egzamino atsakymai. Idomu...",
-      "next": null,
+      "text": "Tai tikrai atsakymai... Bet ar verta taip rizikuoti?",
+      "next": "end2b",
       "portrait": "jonas_default",
       "background": "hallway"
     },
     {
+      "id": "end2b",
+      "speaker": "Ona",
+      "text": "Nezinau... bet dabar bent jau zinau, kas laukia rytoj.",
+      "next": null,
+      "portrait": "ona_wink",
+      "background": "hallway"
+    },
+
+    {
       "id": "end3",
       "speaker": "Jonas",
-      "text": "Palikome rasteli. Kazkas kitas ji ras.",
-      "next": null,
+      "text": "Gal geriausia nesikisti. Kazkas kitas tuo pasirupins.",
+      "next": "end3b",
       "portrait": "jonas_default",
       "background": "hallway"
+    },
+    {
+      "id": "end3b",
+      "speaker": "Ona",
+      "text": "Taip... bet kazkaip keistas jausmas tai palikti.",
+      "next": null,
+      "portrait": "ona_smile",
+      "background": "hallway"
+    },
+
+    {
+      "id": "end_fail",
+      "speaker": "Jonas",
+      "text": "Nepadejau Onai... ir dabar jau per velu kazka keisti.",
+      "next": "end_fail2",
+      "portrait": "jonas_default",
+      "background": "classroom"
+    },
+    {
+      "id": "end_fail2",
+      "speaker": "Ona",
+      "text": "...",
+      "next": null,
+      "portrait": "ona_sad",
+      "background": "classroom"
     }
   ]
 }

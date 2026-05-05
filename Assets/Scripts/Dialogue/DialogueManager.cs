@@ -15,6 +15,7 @@ public class DialogueManager : MonoBehaviour
     public ChoiceUIManager choiceUI;
     private DialogueLoader loader;
     private DialogueNode currentNode;
+    private readonly HashSet<string> executedNodeCallbacks = new();
 
     /// <summary> Iškviečiama, kai reikia atnaujinti „antrinį“ UI tekstą (jei toks naudojamas). </summary>
     public event Action<string> OnLineDisplayed;
@@ -196,6 +197,12 @@ public class DialogueManager : MonoBehaviour
     {
         if (currentNode == null) return;
 
+        if (!string.IsNullOrWhiteSpace(currentNode.callback) && !executedNodeCallbacks.Contains(currentNode.id))
+        {
+            executedNodeCallbacks.Add(currentNode.id);
+            HandleCallBack(currentNode.callback);
+        }
+
         // Pirminis dialogo UI (portretas, vardas, eilutė)
         if (dialogueUI != null)
         {
@@ -262,6 +269,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+<<<<<<< HEAD
         // formatas: "CHAPTER:2"
         if (callBack.StartsWith("CHAPTER:"))
         {
@@ -285,22 +293,32 @@ public class DialogueManager : MonoBehaviour
         }
 
         switch (callBack)
+=======
+        string[] callBacks = callBack.Split('|');
+
+        foreach (var cb in callBacks)
+>>>>>>> 72ce0e4e75d9b89033dad5c30587c15e82e97922
         {
-            case "GainTrust":
-                GameVariables.Instance.AddInt("trust", 10);
-                Debug.Log("Trust +10");
-                break;
+            string trimmed = cb.Trim();
 
-            case "LoseTrust":
-                GameVariables.Instance.AddInt("trust", -10);
-                Debug.Log("Trust -10");
-                break;
+            switch (trimmed)
+            {
+                case "GainTrust":
+                    GameVariables.Instance.AddInt("trust", 10);
+                    Debug.Log("Trust +10");
+                    break;
 
-            default:
-                HandleObjectiveAndVariableCallback(callBack);
-                break;
+                case "LoseTrust":
+                    GameVariables.Instance.AddInt("trust", -10);
+                    Debug.Log("Trust -10");
+                    break;
+
+                default:
+                    HandleObjectiveAndVariableCallback(trimmed);
+                    break;
+            }
+            ObjectiveTracker.Instance?.EvaluateObjectives();
         }
-        ObjectiveTracker.Instance?.EvaluateObjectives();
     }
 
     private void HandleObjectiveAndVariableCallback(string callBack)
@@ -344,6 +362,13 @@ public class DialogueManager : MonoBehaviour
         {
             string objectiveID = callBack.Replace("CompleteObjective:", "").Trim();
             ObjectiveTracker.Instance?.CompleteObjective(objectiveID);
+            return;
+        }
+
+        if (callBack.StartsWith("FailObjective:"))
+        {
+            string objectiveID = callBack.Replace("FailObjective:", "").Trim();
+            ObjectiveTracker.Instance?.FailObjective(objectiveID);
             return;
         }
 

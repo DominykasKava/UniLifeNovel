@@ -20,12 +20,14 @@ public class MiniObjectiveItemUI : MonoBehaviour
     [Header("Colors")]
     [SerializeField] private Color normalBackgroundColor = Color.white;
     [SerializeField] private Color completedBackgroundColor = new Color(0.8f, 1f, 0.8f);
+    [SerializeField] private Color failedBackgroundColor = new Color(1f, 0.8f, 0.8f);
     [SerializeField] private Color activeStatusColor = Color.yellow;
     [SerializeField] private Color completedStatusColor = Color.green;
+    [SerializeField] private Color failedStatusColor = Color.red;
 
     private bool isCompleted;
 
-    public void Setup(string title, string description, float progress, bool completed)
+    public void Setup(string title, string description, float progress, ObjectiveState state)
     {
         if (titleText != null)
             titleText.text = title;
@@ -34,7 +36,7 @@ public class MiniObjectiveItemUI : MonoBehaviour
             descriptionText.text = description;
 
         UpdateProgress(progress);
-        SetCompletedState(completed);
+        SetState(state);
     }
 
     public void UpdateProgress(float progress)
@@ -54,27 +56,55 @@ public class MiniObjectiveItemUI : MonoBehaviour
         }
     }
 
-    public void MarkCompleted()
+    public void SetState(ObjectiveState state)
     {
-        isCompleted = true;
-        UpdateProgress(1f);
-        SetCompletedState(true);
-    }
-
-    private void SetCompletedState(bool completed)
-    {
-        isCompleted = completed;
-
         if (statusText != null)
         {
-            statusText.text = isCompleted ? "Įvykdyta" : "Vykdoma";
-            statusText.color = isCompleted ? completedStatusColor : activeStatusColor;
+            {
+                switch (state)
+                {
+                    case ObjectiveState.Active:
+                        statusText.text = "Vykdoma";
+                        statusText.color = activeStatusColor;
+                        break;
+
+                    case ObjectiveState.Completed:
+                        statusText.text = "Ivykdyta";
+                        statusText.color = completedStatusColor;
+                        break;
+
+                    case ObjectiveState.Failed:
+                        statusText.text = "Neivykdyta";
+                        statusText.color = failedStatusColor;
+                        break;
+
+                    default:
+                        statusText.text = "Užrakinta";
+                        statusText.color = Color.gray;
+                        break;
+                }
+            }
         }
 
         if (backgroundImage != null)
-            backgroundImage.color = isCompleted ? completedBackgroundColor : normalBackgroundColor;
+        {
+            switch (state)
+            {
+                case ObjectiveState.Completed:
+                    backgroundImage.color = completedBackgroundColor;
+                    break;
+
+                case ObjectiveState.Failed:
+                    backgroundImage.color = failedBackgroundColor;
+                    break;
+
+                default:
+                    backgroundImage.color = normalBackgroundColor;
+                    break;
+            }
+        }
 
         if (completedIcon != null)
-            completedIcon.SetActive(isCompleted);
+            completedIcon.SetActive(state == ObjectiveState.Completed);
     }
 }
