@@ -5,6 +5,7 @@ using System.Collections;
 public class MainMenuManager : MonoBehaviour
 {
     public string gameSceneName = "GameScene";
+    public GameObject mainMenuPanel;
 
     public void StartGame()
     {
@@ -26,11 +27,13 @@ public class MainMenuManager : MonoBehaviour
     public void OpenSettings(GameObject settingsPanel)
     {
         settingsPanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
     }
 
     public void CloseSettings(GameObject settingsPanel)
     {
         settingsPanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
     }
 
     public void QuitGame()

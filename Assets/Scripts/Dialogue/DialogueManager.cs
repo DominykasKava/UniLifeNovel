@@ -13,20 +13,17 @@ public class DialogueManager : MonoBehaviour
     public BackgroundLoader backgroundLoader;
     public DialogueUI dialogueUI;
     public ChoiceUIManager choiceUI;
+
     private DialogueLoader loader;
     private DialogueNode currentNode;
     private readonly HashSet<string> executedNodeCallbacks = new();
 
-    /// <summary> Iškviečiama, kai reikia atnaujinti „antrinį“ UI tekstą (jei toks naudojamas). </summary>
     public event Action<string> OnLineDisplayed;
-
-    /// <summary> Iškviečiama, kai dialogo eiga pasibaigia. </summary>
     public event Action OnDialogueFinished;
 
     [Header("Dialogue file name (be .json)")]
     public string dialogueFile = "test_dialogue";
 
-    // Apsauga nuo begalinių Jump/Goto kilpų vieno perėjimo metu
     private const int MaxAutoJumps = 32;
 
     private void Awake()
@@ -36,6 +33,7 @@ public class DialogueManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -43,33 +41,24 @@ public class DialogueManager : MonoBehaviour
         loader.Load(dialogueFile);
     }
 
-    /// <summary> Pradeda dialogą nuo nurodyto mazgo ID. </summary>
     public void StartDialogue(string startID)
     {
         currentNode = loader.GetNode(startID);
-
-        // Jei startinis mazgas yra Jump – automatiškai peršokame į tikslą
         ResolveAutoJumps();
-
         UpdateUI();
     }
 
-    /// <summary>
-    /// Pereina prie kito mazgo pagal „next“. Jei naujasis mazgas yra „Jump“,
-    /// automatiškai „praslystame“ per visus jump’us ir sustojame ties „normaliu“ mazgu.
-    /// </summary>
     public void Next()
     {
         if (currentNode == null)
             return;
 
         if ((currentNode.choices != null && currentNode.choices.Length > 0) ||
-    (choiceUI != null && choiceUI.HasActiveChoices))
+            (choiceUI != null && choiceUI.HasActiveChoices))
         {
             return;
         }
 
-        // Jei nėra „next“ – dialogas pasibaigė
         if (string.IsNullOrEmpty(currentNode.next))
         {
             OnDialogueFinished?.Invoke();
@@ -77,7 +66,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        var nextNode = loader.GetNode(currentNode.next);
+        DialogueNode nextNode = loader.GetNode(currentNode.next);
 
         if (!CheckCondition(nextNode))
         {
@@ -86,19 +75,12 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Žingsnis į „next“
-        currentNode = loader.GetNode(currentNode.next);
+        currentNode = nextNode;
 
-        // Auto-jump’ai
         ResolveAutoJumps();
-
         UpdateUI();
     }
 
-    /// <summary>
-    /// Pasirinkimo apdorojimas (kai turėsi pasirinkimų UI).
-    /// Iškviesk: DialogueManager.Instance.Choose(index) iš mygtuko OnClick().
-    /// </summary>
     public void Choose(int index)
     {
         if (currentNode == null || currentNode.choices == null || currentNode.choices.Length == 0)
@@ -110,50 +92,45 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        var choice = currentNode.choices[index];
+        Choices choice = currentNode.choices[index];
+
         if (!string.IsNullOrEmpty(choice.callback))
         {
             HandleCallBack(choice.callback);
         }
 
-
         if (!string.IsNullOrWhiteSpace(choice.next))
         {
             GoTo(choice.next);
-
-            // Po perėjimo – jei sutinkame Jump, „praslystame“
             ResolveAutoJumps();
-
             UpdateUI();
         }
     }
 
-    /// <summary> Pereina į konkretų mazgą pagal ID. </summary>
     public void GoTo(string nodeId)
     {
-        var node = loader.GetNode(nodeId);
+        DialogueNode node = loader.GetNode(nodeId);
+
         if (node == null)
         {
             Debug.LogError($"DialogueManager.GoTo: nerastas mazgas '{nodeId}'.");
             return;
         }
+
         currentNode = node;
     }
 
-    /// <summary> Grąžina esamą mazgą (jei kam reikia). </summary>
-    public DialogueNode GetCurrentNode() => currentNode;
+    public DialogueNode GetCurrentNode()
+    {
+        return currentNode;
+    }
 
-    /// <summary>
-    /// Automatiškai „praslysta“ per visus Jump/Goto mazgus:
-    /// kol mazgas turi „jumpTo“, pereina į nurodytą tikslą.
-    /// </summary>
     private void ResolveAutoJumps()
     {
         int hops = 0;
 
         while (currentNode != null && hops++ < MaxAutoJumps)
         {
-            // CONDITIONS
             if (!CheckCondition(currentNode))
             {
                 Debug.Log("Conditions nepasiektos node");
@@ -169,10 +146,10 @@ public class DialogueManager : MonoBehaviour
                 continue;
             }
 
-            // JUMP
             if (!string.IsNullOrWhiteSpace(currentNode.jumpTo))
             {
-                var target = loader.GetNode(currentNode.jumpTo);
+                DialogueNode target = loader.GetNode(currentNode.jumpTo);
+
                 if (target == null)
                 {
                     Debug.LogError("Jump target nerastas: " + currentNode.jumpTo);
@@ -188,48 +165,48 @@ public class DialogueManager : MonoBehaviour
 
         if (hops >= MaxAutoJumps)
         {
-            Debug.LogError("Per daug Jump – galimas loop");
+            Debug.LogError("Per daug Jump, galimas loop");
         }
     }
 
-    /// <summary> Atnaujina visus UI sluoksnius pagal esamą mazgą. </summary>
     private void UpdateUI()
     {
-        if (currentNode == null) return;
+        if (currentNode == null)
+            return;
 
-        if (!string.IsNullOrWhiteSpace(currentNode.callback) && !executedNodeCallbacks.Contains(currentNode.id))
+        if (!string.IsNullOrWhiteSpace(currentNode.callback) &&
+            !executedNodeCallbacks.Contains(currentNode.id))
         {
             executedNodeCallbacks.Add(currentNode.id);
             HandleCallBack(currentNode.callback);
         }
 
-        // Pirminis dialogo UI (portretas, vardas, eilutė)
         if (dialogueUI != null)
         {
-            // Šiuo metu portretą paduodame kaip null; jei turi Sprite resolv’ą – integruosi vėliau
             dialogueUI.DisplayDialogue(currentNode.speaker, currentNode.text, null);
         }
 
-        // Antrinis UI (jei naudoji DialogueUIController su atskiru TMP tekstu)
         OnLineDisplayed?.Invoke(currentNode.text ?? string.Empty);
         DialogueBacklog.AddLine(currentNode.text);
 
-        // Vardas viršuje (jei naudoji)
         if (characterDisplay != null)
+        {
             characterDisplay.SetSpeakerName(currentNode.speaker);
+        }
 
-        // Portretas (jei yra duomenyse)
         if (portraitController != null && !string.IsNullOrEmpty(currentNode.portrait))
         {
-            var parts = currentNode.portrait.Split('_');
-            var characterName = parts[0];
-            var expression = parts.Length > 1 ? parts[1] : "default";
+            string[] parts = currentNode.portrait.Split('_');
+            string characterName = parts[0];
+            string expression = parts.Length > 1 ? parts[1] : "default";
+
             portraitController.SetPortrait(characterName, expression);
         }
 
-        // Foninis paveikslas (jei yra duomenyse)
         if (backgroundLoader != null && !string.IsNullOrEmpty(currentNode.background))
+        {
             backgroundLoader.SetBackground(currentNode.background);
+        }
 
         if (choiceUI != null)
         {
@@ -248,17 +225,18 @@ public class DialogueManager : MonoBehaviour
 
     private bool CheckCondition(DialogueNode node)
     {
+        if (node == null)
+            return false;
+
         if (node.conditions == null || node.conditions.Length == 0)
-        {
             return true;
-        }
+
         foreach (var condition in node.conditions)
         {
             if (!condition.Evaluate())
-            {
                 return false;
-            }
         }
+
         return true;
     }
 
@@ -269,37 +247,33 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-<<<<<<< HEAD
-        // formatas: "CHAPTER:2"
-        if (callBack.StartsWith("CHAPTER:"))
-        {
-            string data = callBack.Replace("CHAPTER:", "").Trim();
-
-            if (int.TryParse(data, out int chapterNumber))
-            {
-                ChapterManager.Instance?.SetChapter(chapterNumber);
-                Debug.Log("Chapter pakeistas į: " + chapterNumber);
-            }
-            return;
-        }
-
-        // formatas: "OBJ:talk_to_teacher"
-        if (callBack.StartsWith("OBJ:"))
-        {
-            string objectiveId = callBack.Replace("OBJ:", "").Trim();
-            ChapterManager.Instance?.CompleteObjective(objectiveId);
-            Debug.Log("Objective atliktas: " + objectiveId);
-            return;
-        }
-
-        switch (callBack)
-=======
         string[] callBacks = callBack.Split('|');
 
-        foreach (var cb in callBacks)
->>>>>>> 72ce0e4e75d9b89033dad5c30587c15e82e97922
+        foreach (string cb in callBacks)
         {
             string trimmed = cb.Trim();
+
+            if (trimmed.StartsWith("CHAPTER:"))
+            {
+                string data = trimmed.Replace("CHAPTER:", "").Trim();
+
+                if (int.TryParse(data, out int chapterNumber))
+                {
+                    ChapterManager.Instance?.SetChapter(chapterNumber);
+                    Debug.Log("Chapter pakeistas į: " + chapterNumber);
+                }
+
+                continue;
+            }
+
+            if (trimmed.StartsWith("OBJ:"))
+            {
+                string objectiveId = trimmed.Replace("OBJ:", "").Trim();
+                ChapterManager.Instance?.CompleteObjective(objectiveId);
+                Debug.Log("Objective atliktas: " + objectiveId);
+
+                continue;
+            }
 
             switch (trimmed)
             {
@@ -317,6 +291,7 @@ public class DialogueManager : MonoBehaviour
                     HandleObjectiveAndVariableCallback(trimmed);
                     break;
             }
+
             ObjectiveTracker.Instance?.EvaluateObjectives();
         }
     }
@@ -334,6 +309,7 @@ public class DialogueManager : MonoBehaviour
                 GameVariables.Instance.AddInt(key, amount);
                 Debug.Log($"{key} {(amount >= 0 ? "+" : "")}{amount}");
             }
+
             return;
         }
 
@@ -348,6 +324,7 @@ public class DialogueManager : MonoBehaviour
                 GameVariables.Instance.SetInt(key, value);
                 Debug.Log($"{key} set to {value}");
             }
+
             return;
         }
 
@@ -404,14 +381,11 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-
         if (ChapterManager.Instance != null)
         {
             ChapterManager.Instance.SetChapter(data.chapter);
         }
 
-
-        // Nustatome currentNode
         DialogueNode loadedNode = loader.GetNode(data.currentNodeID);
 
         if (loadedNode == null)
@@ -435,12 +409,10 @@ public class DialogueManager : MonoBehaviour
             GameVariables.Instance.SetBool(varData.key, varData.value);
         }
 
-        // Parodome UI
         UpdateUI();
 
         Debug.Log("Dialogas užkrautas nuo mazgo: " + data.currentNodeID);
     }
-
 
     public void SaveToFile(string fileName = "dialogue_save.json")
     {
@@ -453,7 +425,11 @@ public class DialogueManager : MonoBehaviour
         SaveData data = new SaveData();
         data.currentNodeID = currentNode.id;
         data.dialogueIndex = 0;
-        data.chapter = ChapterManager.Instance.GetChapter();
+
+        if (ChapterManager.Instance != null)
+        {
+            data.chapter = ChapterManager.Instance.GetChapter();
+        }
 
         foreach (var pair in GameVariables.Instance.GetAllInts())
         {
@@ -499,6 +475,11 @@ public class DialogueManager : MonoBehaviour
         data.currentNodeID = currentNode.id;
         data.dialogueIndex = 0;
 
+        if (ChapterManager.Instance != null)
+        {
+            data.chapter = ChapterManager.Instance.GetChapter();
+        }
+
         foreach (var pair in GameVariables.Instance.GetAllInts())
         {
             data.intVariables.Add(new IntVariableData
@@ -538,6 +519,11 @@ public class DialogueManager : MonoBehaviour
 
         currentNode = loadedNode;
 
+        if (ChapterManager.Instance != null)
+        {
+            ChapterManager.Instance.SetChapter(data.chapter);
+        }
+
         GameVariables.Instance.GetAllInts().Clear();
         GameVariables.Instance.GetAllBools().Clear();
 
@@ -555,7 +541,4 @@ public class DialogueManager : MonoBehaviour
 
         Debug.Log("Dialogas užkrautas nuo mazgo: " + data.currentNodeID);
     }
-
-
 }
-
