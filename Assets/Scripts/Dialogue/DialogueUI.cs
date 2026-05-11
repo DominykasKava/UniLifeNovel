@@ -33,7 +33,8 @@ public class DialogueUI : MonoBehaviour
         foreach (char letter in line)
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
+            float speed = SettingsManager.instance.currentSettings.textSpeed;
+            yield return new WaitForSeconds(typingSpeed / speed);
         }
     }
 }
