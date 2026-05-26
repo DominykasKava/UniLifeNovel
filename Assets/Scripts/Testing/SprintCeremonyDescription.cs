@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class SprintCeremonyDescription : MonoBehaviour
+public class SprintCeremonyDescription : MonoBehaviour
 {
     public static List<string> Planning = new List<string>()
     {
