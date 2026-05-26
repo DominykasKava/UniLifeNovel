@@ -18,7 +18,7 @@ Tai vizualinės novelės tipo žaidimas, kuriame žaidėjas seka universiteto st
 
 
 
-## \##  Overview
+## \## 📌 Overview
 
 
 
@@ -36,7 +36,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \##  Core Systems
+## \## 🧱 Core Systems
 
 
 
@@ -54,7 +54,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Choices / Branching
+## \### 🌿 Choices / Branching
 
 \- Player decisions affect story paths
 
@@ -68,7 +68,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Variables \& Conditions
+## \### ⚙️ Variables \& Conditions
 
 \- Global and local variables
 
@@ -82,7 +82,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Save / Load System
+## \### 💾 Save / Load System
 
 \- Full game state saving
 
@@ -96,7 +96,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Chapter System
+## \### 📖 Chapter System
 
 \- Structured story progression
 
@@ -110,7 +110,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Mini Objectives
+## \### 🎯 Mini Objectives
 
 \- Lightweight objective tracking
 
@@ -124,7 +124,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Backlog System
+## \### 🗂 Backlog System
 
 \- Development tracking structure
 
@@ -138,7 +138,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \###  Testing System
+## \### 🧪 Testing System
 
 \- Acceptance test framework implemented in Unity
 
@@ -160,7 +160,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \### UI Systems
+## \### 🖥 UI Systems
 
 
 
@@ -188,7 +188,7 @@ It is designed as a learning project to simulate real game development structure
 
 
 
-## \##  Testing
+## \## 🧪 Testing
 
 
 
@@ -220,7 +220,7 @@ Tests can be executed via in-game Unity button
 
 
 
-## \##  Future Improvements
+## \## 🚀 Future Improvements
 
 
 
@@ -260,7 +260,7 @@ Tests can be executed via in-game Unity button
 
 
 
-## \##  Purpose
+## \## 👨‍💻 Purpose
 
 
 
